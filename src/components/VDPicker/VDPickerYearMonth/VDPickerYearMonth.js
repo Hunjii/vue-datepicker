@@ -267,7 +267,7 @@ export default {
     genMonthQuarterButton(value, mode, index) {
       const selectedIndex = mode === "quarter" ? index * 3 : index;
 
-      values = value.split(" ");
+      const values = value.split(" ");
 
       return this.$createElement(
         "button",
@@ -291,8 +291,7 @@ export default {
           this.$createElement(
             "p",
             {
-              staticClass: "vd-picker__selects-quarters_text",
-              key
+              staticClass: "vd-picker__selects-quarters_text"
             },
             [values[0]]
           ),
