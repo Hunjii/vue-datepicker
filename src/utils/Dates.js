@@ -47,9 +47,9 @@ export default class PickerDate {
   }
   getQuarters () {
     return Array.apply(0, Array(4)).map((_, i) => {
-      const quarterMonthStart = dayjs().quarter(i + 1).startOf('quarter').format('MMMM');
-      const quarterMonthEnd = dayjs().quarter(i + 1).endOf('quarter').format('MMMM');
-      return `${quarterMonthStart} - ${quarterMonthEnd}`;
+      const quarterMonthStart = dayjs().quarter(i + 1).startOf('quarter').format('MM');
+      const quarterMonthEnd = dayjs().quarter(i + 1).endOf('quarter').format('MM');
+      return `${quarterMonthStart} +++ ${quarterMonthEnd}`;
     });
   }
   getMonthFormatted () {
