@@ -31,7 +31,10 @@ dayjs.extend(weekOfYear);
 export default class PickerDate {
   constructor (month, year, { lang = en } = {}) {
     dayjs.locale(lang);
-    this.start = dayjs().year(year).month(month).startOf('month');
+    this.start = dayjs()
+      .year(year)
+      .month(month)
+      .startOf('month');
     this.end = this.start.endOf('month');
     this.month = month;
     this.year = year;
@@ -43,13 +46,23 @@ export default class PickerDate {
     return Array.from(generateDateRange(this.start, this.end));
   }
   getMonths () {
-    return Array.apply(0, Array(12)).map((_, i) => dayjs().month(i).format('MMM'));
+    return Array.apply(0, Array(12)).map((_, i) =>
+      dayjs()
+        .month(i)
+        .format('MMM')
+    );
   }
   getQuarters () {
     return Array.apply(0, Array(4)).map((_, i) => {
-      const quarterMonthStart = dayjs().quarter(i + 1).startOf('quarter').format('MMMM');
-      const quarterMonthEnd = dayjs().quarter(i + 1).endOf('quarter').format('MMMM');
-      return `${quarterMonthStart} +++ ${quarterMonthEnd}`;
+      const quarterMonthStart = dayjs()
+        .quarter(i + 1)
+        .startOf('quarter')
+        .format('MMMM');
+      const quarterMonthEnd = dayjs()
+        .quarter(i + 1)
+        .endOf('quarter')
+        .format('MMMM');
+      return `${quarterMonthStart} ${quarterMonthEnd}`;
     });
   }
   getMonthFormatted () {
@@ -71,7 +84,10 @@ export default class PickerDate {
 export function initDate (date, { range, locale, type }) {
   if (range) {
     return {
-      start: date && date.start != null ? generateDate(date.start, locale) : undefined,
+      start:
+        date && date.start != null
+          ? generateDate(date.start, locale)
+          : undefined,
       end: date && date.end != null ? generateDate(date.end, locale) : undefined,
     };
   }
@@ -99,24 +115,34 @@ export function generateDateFormatted (date, locale, format) {
 }
 
 export function generateDateWithYearAndMonth (year, month) {
-  return generateDate().year(year).month(month).startOf('month');
+  return generateDate()
+    .year(year)
+    .month(month)
+    .startOf('month');
 }
 
 export function generateDateRange (startDate, endDate, interval = 'day') {
   const start = generateDate(startDate);
   const end = generateDate(endDate);
   const diffBetweenDates = end.diff(start, interval);
-  return [...Array(diffBetweenDates + 1).keys()].map(i => start.add(i, interval));
+  return [...Array(diffBetweenDates + 1).keys()].map(i =>
+    start.add(i, interval)
+  );
 }
 
-export function generateDateRangeWithoutDisabled ({ start, end }, minDate, maxDate) {
+export function generateDateRangeWithoutDisabled (
+  { start, end },
+  minDate,
+  maxDate
+) {
   const validMinDate = minDate || generateDate().year(AVAILABLE_YEARS.min);
   const validMaxDate = maxDate || generateDate().year(AVAILABLE_YEARS.max);
 
-  return generateDateRange(start, end)
-    .filter(date =>
+  return generateDateRange(start, end).filter(
+    date =>
       date.isSameOrAfter(validMinDate, 'day') &&
-      date.isSameOrBefore(dayjs(validMaxDate, 'day')));
+      date.isSameOrBefore(dayjs(validMaxDate, 'day'))
+  );
 }
 
 export function generateMonthAndYear (value, currentDate, mode) {
@@ -183,17 +209,25 @@ export function getRangeDatesFormatted ({ start, end } = {}, locale, format) {
   }
 
   if (!start && end) {
-    return `__ ~ ${generateDate(end, locale).startOf('day').format(format)}`;
+    return `__ ~ ${generateDate(end, locale)
+      .startOf('day')
+      .format(format)}`;
   }
 
   if (start && !end) {
-    return `${generateDate(start, locale).startOf('day').format(format)} ~ __`;
+    return `${generateDate(start, locale)
+      .startOf('day')
+      .format(format)} ~ __`;
   }
 
   return `\
-${generateDate(start, locale).startOf('day').format(format)} \
+${generateDate(start, locale)
+    .startOf('day')
+    .format(format)} \
 ~ \
-${generateDate(end, locale).startOf('day').format(format)}`;
+${generateDate(end, locale)
+    .startOf('day')
+    .format(format)}`;
 }
 
 // -----------------------------------------
@@ -207,36 +241,55 @@ ${generateDate(end, locale).startOf('day').format(format)}`;
 // -----------------------------------------
 export function isDateAllowed ({ date, min, max, allowedFn }) {
   const formattedDate = date.toDate();
-  return (!allowedFn || allowedFn(formattedDate)) &&
-    (!min || areSameDates(formattedDate, min) || isAfterDate(formattedDate, min)) &&
-    (!max || areSameDates(formattedDate, max) || isBeforeDate(formattedDate, max));
+  return (
+    (!allowedFn || allowedFn(formattedDate)) &&
+    (!min ||
+      areSameDates(formattedDate, min) ||
+      isAfterDate(formattedDate, min)) &&
+    (!max ||
+      areSameDates(formattedDate, max) ||
+      isBeforeDate(formattedDate, max))
+  );
 }
 
 export function isDateToday (date) {
-  return generateDate(date.format('YYYY-MM-DD')).isSame(generateDate().format('YYYY-MM-DD'));
+  return generateDate(date.format('YYYY-MM-DD')).isSame(
+    generateDate().format('YYYY-MM-DD')
+  );
 }
 
 export function areSameDates (date, dateSelected, type = 'date') {
-  return dayjs(date, DEFAULT_OUTPUT_DATE_FORMAT[type])
-    .isSame(dayjs(dateSelected, DEFAULT_OUTPUT_DATE_FORMAT[type]));
+  return dayjs(date, DEFAULT_OUTPUT_DATE_FORMAT[type]).isSame(
+    dayjs(dateSelected, DEFAULT_OUTPUT_DATE_FORMAT[type])
+  );
 }
 
 export function isBeforeDate (date, beforeDate, type = 'day') {
   if (type === 'year') {
-    return Boolean(beforeDate) && date < dayjs(beforeDate, 'YYYY-MM-DD').get(type);
+    return (
+      Boolean(beforeDate) && date < dayjs(beforeDate, 'YYYY-MM-DD').get(type)
+    );
   }
 
   const selectedDate = dayjs.isDayjs(date) ? date : dayjs(date).startOf('day');
-  return Boolean(beforeDate) && selectedDate.isBefore(dayjs(beforeDate).startOf('day'), type);
+  return (
+    Boolean(beforeDate) &&
+    selectedDate.isBefore(dayjs(beforeDate).startOf('day'), type)
+  );
 }
 
 export function isAfterDate (date, afterDate, type = 'day') {
   if (type === 'year') {
-    return Boolean(afterDate) && date > dayjs(afterDate, 'YYYY-MM-DD').get(type);
+    return (
+      Boolean(afterDate) && date > dayjs(afterDate, 'YYYY-MM-DD').get(type)
+    );
   }
 
   const selectedDate = dayjs.isDayjs(date) ? date : dayjs(date).startOf('day');
-  return Boolean(afterDate) && selectedDate.isAfter(dayjs(afterDate).startOf('day'), type);
+  return (
+    Boolean(afterDate) &&
+    selectedDate.isAfter(dayjs(afterDate).startOf('day'), type)
+  );
 }
 
 export function isBetweenDates (date, startDate, maxDate) {

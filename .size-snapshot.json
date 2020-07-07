@@ -22,5 +22,10 @@
     "bundled": 149834,
     "minified": 80530,
     "gzipped": 20825
+  },
+  "dist\\vue-datepicker.min.js": {
+    "bundled": 133275,
+    "minified": 75354,
+    "gzipped": 20257
   }
 }
