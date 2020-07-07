@@ -1,24 +1,24 @@
 // Styles
-import './VDPickerYearMonth.scss';
+import "./VDPickerYearMonth.scss";
 
 // Mixins
-import colorable from '../../../mixins/colorable';
+import colorable from "../../../mixins/colorable";
 
 // Components
-import DatePickerControls from '../VDPickerControls/VDPickerControls';
+import DatePickerControls from "../VDPickerControls/VDPickerControls";
 
 // Functions
 import {
   generateDateWithYearAndMonth,
   isBeforeDate,
   isAfterDate,
-  areSameDates,
-} from '../../../utils/Dates';
+  areSameDates
+} from "../../../utils/Dates";
 
-import { computeYearsScrollPosition } from '../../../utils/positions';
+import { computeYearsScrollPosition } from "../../../utils/positions";
 
 export default {
-  name: 'VDPickerYearMonth',
+  name: "VDPickerYearMonth",
   mixins: [colorable],
   components: { DatePickerControls },
   props: {
@@ -32,207 +32,285 @@ export default {
     range: { type: Boolean, default: false },
     showYearMonthSelector: { type: Function },
     transitionName: { type: String, default: String },
-    visibleYearsNumber: { type: Number, default: 10 },
+    visibleYearsNumber: { type: Number, default: 10 }
   },
   data: () => ({
-    activeYear: undefined,
+    activeYear: undefined
   }),
   computed: {
-    isYearMode () {
-      return this.mode === 'year';
+    isYearMode() {
+      return this.mode === "year";
     },
-    isMonthOrQuarterMode () {
-      return this.mode === 'month' || this.mode === 'quarter';
+    isMonthOrQuarterMode() {
+      return this.mode === "month" || this.mode === "quarter";
     },
-    yearFormatted () {
+    yearFormatted() {
       return this.currentDate.getYearFormatted();
     },
-    getYears () {
-      return this.currentDate.generateYearsRange(this.activeYear, this.visibleYearsNumber, 'year');
+    getYears() {
+      return this.currentDate.generateYearsRange(
+        this.activeYear,
+        this.visibleYearsNumber,
+        "year"
+      );
     },
-    getMonths () {
+    getMonths() {
       return this.currentDate.getMonths();
     },
-    getQuarters () {
+    getQuarters() {
       return this.currentDate.getQuarters();
     },
-    shouldComputeYearPosition () {
+    shouldComputeYearPosition() {
       return this.active && this.isYearMode && this.visibleYearsNumber;
-    },
+    }
   },
   watch: {
     shouldComputeYearPosition: {
-      handler (value) {
+      handler(value) {
         if (!value) return;
         this.$nextTick(this.computeScrollPosition);
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
-  created () {
+  created() {
     this.activeYear = this.currentDate.year;
   },
   methods: {
     // ------------------------------
     // Year/Month/Quarter states
     // ------------------------------
-    isSelectedYear (year) {
+    isSelectedYear(year) {
       return this.currentDate.year === year;
     },
-    isSelectedMonthOrQuarter (monthIndex) {
+    isSelectedMonthOrQuarter(monthIndex) {
       if (this.range || !this.mutableDate) return false;
-      const selectedDate = generateDateWithYearAndMonth(this.currentDate.year, monthIndex);
+      const selectedDate = generateDateWithYearAndMonth(
+        this.currentDate.year,
+        monthIndex
+      );
       return areSameDates(
-        this.mutableDate.format('YYYY-MM'),
-        selectedDate.format('YYYY-MM'),
+        this.mutableDate.format("YYYY-MM"),
+        selectedDate.format("YYYY-MM"),
         this.mode
       );
     },
-    isYearDisabled (year) {
-      return isBeforeDate(year, this.minDate, this.mode) ||
-        isAfterDate(year, this.maxDate, this.mode);
+    isYearDisabled(year) {
+      return (
+        isBeforeDate(year, this.minDate, this.mode) ||
+        isAfterDate(year, this.maxDate, this.mode)
+      );
     },
-    isMonthOrQuarterDisabled (monthIndex) {
+    isMonthOrQuarterDisabled(monthIndex) {
       const date = generateDateWithYearAndMonth(this.yearFormatted, monthIndex);
-      return isBeforeDate(date, this.minDate, 'month') ||
-        isAfterDate(date, this.maxDate, 'month');
+      return (
+        isBeforeDate(date, this.minDate, "month") ||
+        isAfterDate(date, this.maxDate, "month")
+      );
     },
     // ------------------------------
     // Scroll position
     // ------------------------------
-    computeScrollPosition () {
-      const activeItem = this.$el.querySelector('button.active');
+    computeScrollPosition() {
+      const activeItem = this.$el.querySelector("button.active");
       /* istanbul ignore next */
-      if (!activeItem || this.mode !== 'year') return;
+      if (!activeItem || this.mode !== "year") return;
 
       // should scroll to active year
-      const containerToScroll = this.$el.querySelector('.vd-picker__selects-years__wrapper');
-      containerToScroll.scrollTop = computeYearsScrollPosition(containerToScroll, activeItem);
+      const containerToScroll = this.$el.querySelector(
+        ".vd-picker__selects-years__wrapper"
+      );
+      containerToScroll.scrollTop = computeYearsScrollPosition(
+        containerToScroll,
+        activeItem
+      );
     },
     // ------------------------------
     // Events
     // ------------------------------
-    changeYear (direction) {
-      this.$emit('changeYear', direction);
+    changeYear(direction) {
+      this.$emit("changeYear", direction);
     },
-    onSelect (value) {
-      this.$emit('selectedYearMonth', value, this.mode);
+    onSelect(value) {
+      this.$emit("selectedYearMonth", value, this.mode);
     },
     // ------------------------------
     // Generate Template
     // ------------------------------
-    genContent () {
+    genContent() {
       return [
         this.isYearMode && this.genYearMode(),
-        this.isMonthOrQuarterMode && this.genMonthOrQuarter(),
+        this.isMonthOrQuarterMode && this.genMonthOrQuarter()
       ];
     },
     // -- Years
-    genYearMode () {
-      const yearsList = this.$createElement('div', {
-        staticClass: 'vd-picker__selects-years__list',
-      }, this.getYears.map(year => this.genYearButton(year)));
-      const yearsWrapper = this.$createElement('div', {
-        staticClass: 'vd-picker__selects-years__wrapper',
-      }, [yearsList]);
+    genYearMode() {
+      const yearsList = this.$createElement(
+        "div",
+        {
+          staticClass: "vd-picker__selects-years__list"
+        },
+        this.getYears.map(year => this.genYearButton(year))
+      );
+      const yearsWrapper = this.$createElement(
+        "div",
+        {
+          staticClass: "vd-picker__selects-years__wrapper"
+        },
+        [yearsList]
+      );
 
-      return this.$createElement('div', {
-        staticClass: 'vd-picker__selects-years',
-      }, [yearsWrapper]);
+      return this.$createElement(
+        "div",
+        {
+          staticClass: "vd-picker__selects-years"
+        },
+        [yearsWrapper]
+      );
     },
-    genYearButton (year) {
-      return this.$createElement('button', {
-        key: year,
-        class: {
-          'active': this.isSelectedYear(year),
+    genYearButton(year) {
+      return this.$createElement(
+        "button",
+        {
+          key: year,
+          class: {
+            active: this.isSelectedYear(year)
+          },
+          style: {
+            ...(this.isSelectedYear(year) && this.setTextColor("#fff")),
+            ...(this.isSelectedYear(year) &&
+              this.setBackgroundColor(this.color))
+          },
+          attrs: {
+            disabled: this.isYearDisabled(year)
+          },
+          on: {
+            click: () => this.onSelect(year)
+          }
         },
-        style: {
-          ...(this.isSelectedYear(year) && this.setTextColor('#fff')),
-          ...(this.isSelectedYear(year) && this.setBackgroundColor(this.color)),
-        },
-        attrs: {
-          disabled: this.isYearDisabled(year),
-        },
-        on: {
-          click: () => this.onSelect(year),
-        },
-      }, [year]);
+        [year]
+      );
     },
     // -- Month or Quarter
-    genMonthOrQuarter () {
-      return this.$createElement('div', {
-        staticClass: 'vd-picker__selects-wrapper',
-      }, [
-        this.genDatePickerControls(),
-        this.genMonthQuarterTransition(this.mode),
-      ]);
+    genMonthOrQuarter() {
+      return this.$createElement(
+        "div",
+        {
+          staticClass: "vd-picker__selects-wrapper"
+        },
+        [
+          this.genDatePickerControls(),
+          this.genMonthQuarterTransition(this.mode)
+        ]
+      );
     },
-    genDatePickerControls () {
+    genDatePickerControls() {
       return this.$createElement(DatePickerControls, {
         props: {
           color: this.color,
           currentDate: this.currentDate,
           maxDate: this.maxDate,
           minDate: this.minDate,
-          mode: 'year',
-          transitionName: this.transitionName,
+          mode: "year",
+          transitionName: this.transitionName
         },
         on: {
           changeVisibleDate: this.changeYear,
-          showYearMonthSelector: this.showYearMonthSelector,
-        },
+          showYearMonthSelector: this.showYearMonthSelector
+        }
       });
     },
-    genMonthQuarterTransition (mode) {
-      return this.$createElement('transition-group', {
-        staticClass: 'vd-picker__selects-inner',
-        props: {
-          tag: 'div',
-          name: this.transitionName,
+    genMonthQuarterTransition(mode) {
+      return this.$createElement(
+        "transition-group",
+        {
+          staticClass: "vd-picker__selects-inner",
+          props: {
+            tag: "div",
+            name: this.transitionName
+          }
         },
-      }, [this.currentDate.year].map(year => {
-        if (mode === 'month') return this.genMonthList(year, mode);
-        return this.genQuarterList(year, mode);
-      }));
+        [this.currentDate.year].map(year => {
+          if (mode === "month") return this.genMonthList(year, mode);
+          return this.genQuarterList(year, mode);
+        })
+      );
     },
-    genMonthList (key, mode) {
-      return this.$createElement('div', {
-        staticClass: 'vd-picker__selects-months',
-        key,
-      }, [
-        this.getMonths.map((month, index) => this.genMonthQuarterButton(month, mode, index)),
-      ]);
-    },
-    genQuarterList (key, mode) {
-      return this.$createElement('div', {
-        staticClass: 'vd-picker__selects-quarters',
-        key,
-      }, [
-        this.getQuarters.map((quarter, index) => this.genMonthQuarterButton(quarter, mode, index)),
-      ]);
-    },
-    genMonthQuarterButton (value, mode, index) {
-      const selectedIndex = mode === 'quarter' ? index * 3 : index;
-      return this.$createElement('button', {
-        key: index,
-        style: {
-          ...(this.isSelectedMonthOrQuarter(selectedIndex) && this.setTextColor('#fff')),
-          ...(this.isSelectedMonthOrQuarter(selectedIndex) && this.setBackgroundColor(this.color)),
+    genMonthList(key, mode) {
+      return this.$createElement(
+        "div",
+        {
+          staticClass: "vd-picker__selects-months",
+          key
         },
-        attrs: {
-          type: 'button',
-          disabled: this.isMonthOrQuarterDisabled(index),
-        },
-        on: {
-          click: () => this.onSelect(index),
-        },
-      }, [value]);
+        [
+          this.getMonths.map((month, index) =>
+            this.genMonthQuarterButton(month, mode, index)
+          )
+        ]
+      );
     },
+    genQuarterList(key, mode) {
+      return this.$createElement(
+        "div",
+        {
+          staticClass: "vd-picker__selects-quarters",
+          key
+        },
+        [
+          this.getQuarters.map((quarter, index) =>
+            this.genMonthQuarterButton(quarter, mode, index)
+          )
+        ]
+      );
+    },
+    genMonthQuarterButton(value, mode, index) {
+      const selectedIndex = mode === "quarter" ? index * 3 : index;
+
+      values = value.split(" ");
+
+      return this.$createElement(
+        "button",
+        {
+          key: index,
+          style: {
+            ...(this.isSelectedMonthOrQuarter(selectedIndex) &&
+              this.setTextColor("#fff")),
+            ...(this.isSelectedMonthOrQuarter(selectedIndex) &&
+              this.setBackgroundColor(this.color))
+          },
+          attrs: {
+            type: "button",
+            disabled: this.isMonthOrQuarterDisabled(index)
+          },
+          on: {
+            click: () => this.onSelect(index)
+          }
+        },
+        [
+          this.$createElement(
+            "p",
+            {
+              staticClass: "vd-picker__selects-quarters_text",
+              key
+            },
+            [values[0]]
+          ),
+          values[1]
+        ]
+      );
+    }
   },
-  render (h) {
-    const children = h('div', { staticClass: 'vd-picker__selects' }, [this.genContent()]);
-    return h('transition', {
-      props: { name: 'yearMonth' },
-    }, [children]);
-  },
+  render(h) {
+    const children = h("div", { staticClass: "vd-picker__selects" }, [
+      this.genContent()
+    ]);
+    return h(
+      "transition",
+      {
+        props: { name: "yearMonth" }
+      },
+      [children]
+    );
+  }
 };
