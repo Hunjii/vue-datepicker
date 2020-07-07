@@ -295,7 +295,13 @@ export default {
             },
             [values[0]]
           ),
-          values[1]
+          this.$createElement(
+            "p",
+            {
+              staticClass: "vd-picker__selects-quarters_text"
+            },
+            [values[1]]
+          )
         ]
       );
     }
