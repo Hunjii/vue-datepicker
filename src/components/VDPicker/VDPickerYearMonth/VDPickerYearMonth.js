@@ -267,7 +267,7 @@ export default {
     genMonthQuarterButton(value, mode, index) {
       const selectedIndex = mode === "quarter" ? index * 3 : index;
 
-      const values = value.split(" ");
+      const values = value.split("/");
 
       return this.$createElement(
         "button",
